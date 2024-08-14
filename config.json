@@ -1,0 +1,252 @@
+{
+    "PAD": {
+        "base_dir": "/mnc/zwq/Dataset/PADdata/images",
+        "split": "/mnc/zwq/codegithub/Dataset/PAD_split.csv",
+        "metadata": "/mnc/zwq/codegithub/Dataset/PAD_processed_metadata.csv",
+        "transforms": {
+            "transform_train_basic": {
+                "Resize": [[224, 224]],
+                "ToTensor": null,
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            },
+            "transform_train": {
+                "Resize": [[300, 300]],
+                "RandomCrop": [224],
+                "RandomHorizontalFlip": [0.5],
+                "RandomRotation": [30],
+                "ToTensor": null,
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            },
+            "transform_test": {
+                "Resize": [[224, 224]],
+                "ToTensor": null,
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            }
+        },
+        "image_only": {
+            "model_type": "PADImageOnlyModel",
+            "settings": {
+                "default": {
+                    "num_labels": 6
+                }
+            }
+        },
+        "multi_modal": {
+            "model_type": "PADMultiModalModel",
+            "settings": {
+                "default": {
+                    "num_labels": 6,
+                    "metadata_length": 96
+                },
+                "all": {
+                    "num_labels": 6,
+                    "metadata_length": 96
+                },
+                "skin": {
+                    "num_labels": 6,
+                    "metadata_length": 7
+                },
+                "sex": {
+                    "num_labels": 6,
+                    "metadata_length": 3
+                },
+                "age": {
+                    "num_labels": 6,
+                    "metadata_length": 1,
+                "without_smoke": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_drink": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_father_and_mother_background": {
+                    "num_labels": 6,
+                    "metadata_length": 70
+                },
+                "without_pesticide": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_gender": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_skin_cancer_history": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_cancer_history": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_piped_water_and_sewage_system": {
+                    "num_labels": 6,
+                    "metadata_length": 90
+                },
+                "without_region": {
+                    "num_labels": 6,
+                    "metadata_length": 81
+                },
+                "without_itch": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_grew": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_hurt": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_changed": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_bleed": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_elevation": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_biopsed": {
+                    "num_labels": 6,
+                    "metadata_length": 93
+                },
+                "without_fitzpatrick": {
+                    "num_labels": 6,
+                    "metadata_length": 89
+                },
+                "without_age": {
+                    "num_labels": 6,
+                    "metadata_length": 95
+                },
+                "without_diameter": {
+                    "num_labels": 6,
+                    "metadata_length": 94
+                }
+                }
+            }
+        }
+    },
+    "Ol3i": {
+        "base_dir": "/mnc/zwq/Dataset/ol3i/images",
+        "split": "/mnc/zwq/codegithub/Dataset/Ol3i_split.csv",
+        "metadata": "/mnc/zwq/codegithub/Dataset/Ol3i_processed_metadata.csv",
+        "transforms": {
+            "transform_train": {
+                "Resize": [[300, 300]],
+                "CenterCrop": [224],
+                "RandomHorizontalFlip": [0.5],
+                "RandomRotation": [30],
+                "ColorJitter": {
+                    "brightness": 0.2,
+                    "contrast": 0.2,
+                    "saturation": 0.2,
+                    "hue": 0.1
+                },
+                "RandomAffine": {
+                    "degrees": 0,
+                    "translate": [0.1, 0.1],
+                    "scale": [0.9, 1.1],
+                    "shear": 10
+                },
+                "ToTensor": null,
+                "RandomErasing": {
+                    "p": 0.5,
+                    "scale": [0.02, 0.33],
+                    "ratio": [0.3, 3.3],
+                    "value": 0
+                },
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            },
+            "transform_test": {
+                "Resize": [[224, 224]],
+                "ToTensor": null,
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            }
+        },
+        "image_only": {
+            "model_type": "Ol3iImageOnlyModel",
+            "settings": {
+                "default": {
+                    "num_labels": 2
+                }
+            }
+        },
+        "multi_modal": {
+            "model_type": "Ol3iMultiModalModel",
+            "settings": {
+                "default": {
+                    "num_labels": 2,
+                    "metadata_length": 4
+                },
+                "all": {
+                    "num_labels": 2,
+                    "metadata_length": 4
+                },
+                "sex": {
+                    "num_labels": 2,
+                    "metadata_length": 3
+                },
+                "age": {
+                    "num_labels": 2,
+                    "metadata_length": 1
+                }
+            }
+        }
+    },
+    "ODIR": {
+        "base_dir": "/mnc/syq/RetinaModel/RetinaDataset/ODIR-5K/odir5k/preprocessed_images",
+        "split": "/mnc/zwq/codegithub/Dataset/ODIR_split.csv",
+        "metadata": "/mnc/zwq/codegithub/Dataset/ODIR_processed_metadata.csv",
+        "transforms": {
+            "transform_train": {
+                "Resize": [[300, 300]],
+                "RandomCrop": [224],
+                "RandomHorizontalFlip": [0.5],
+                "RandomRotation": [30],
+                "ToTensor": null,
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            },
+            "transform_test": {
+                "Resize": [[224, 224]],
+                "ToTensor": null,
+                "Normalize": [[[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]]
+            }
+        },
+        "image_only": {
+            "model_type": "ODIRImageOnlyModel",
+            "settings": {
+                "default": {
+                    "num_labels": 8
+                }
+            }
+        },
+        "multi_modal": {
+            "model_type": "ODIRMultiModalModel",
+            "settings": {
+                "default": {
+                    "num_labels": 8,
+                    "metadata_length": 4
+                },
+                "all": {
+                    "num_labels": 8,
+                    "metadata_length": 4
+                },
+                "sex": {
+                    "num_labels": 8,
+                    "metadata_length": 3
+                },
+                "age": {
+                    "num_labels": 8,
+                    "metadata_length": 1
+                }
+            }
+        }
+    }
+}
