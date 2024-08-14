@@ -8,13 +8,18 @@ import torch
 from PIL import Image
 from tqdm import tqdm
 import numpy as np
+import os
 
-sys.path.append('/mnc/zwq/codegithub/similarity_cal/llavamed')
+sys.path.append('/similarity_cal/llavamed')
 from llavamed.llava.model.builder import load_pretrained_model
 from llavamed.llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria, process_images
 
 model_path = "similarity_cal/llava-med-v1.5-mistral-7b"
+image_base_path = 'Dataset/PADdata/images/'
+path_to_text_descriptions = 'similarity_cal/updated_metadata.csv'
+results_path = "similarity_results"
 
+data = pd.read_csv(path_to_text_descriptions)
 model_name = "LlavaMistralForCausalLM"
 device = "cuda"
 load_8bit = False
@@ -26,8 +31,8 @@ tokenizer, model, image_processor, context_len = load_pretrained_model(
 
 print('loaded')
 
-data = pd.read_csv('similarity_cal/updated_metadata.csv')
-image_base_path = 'Dataset/PADdata/images/'
+
+
 
 results = {}
 text_columns = data.columns.drop('img_id')
@@ -68,6 +73,6 @@ print('avg_similarities:', avg_similarities)
 for i, col in enumerate(text_columns):
     results[col] = avg_similarities[i]
 results_df = pd.DataFrame(list(results.items()), columns=['Attribute', 'Average Similarity'])
-results_df.to_csv('/mnc/zwq/knowledge/similar_results/text_to_image_similarity.csv', index=False)
-results_every.to_csv('/mnc/zwq/knowledge/similar_results/text_to_image_similarity_every.csv', index=False)
+results_df.to_csv(os.path.join(results_path, 'text_to_image_similarity.csv'), index=True)
+results_every.to_csv(os.path.join(results_path, 'text_to_image_similarity_every.csv'), index=False)
 print('done')
