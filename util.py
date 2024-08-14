@@ -11,8 +11,6 @@ import random
 
 
 def read_dataset(dataset_name, model_str, setting='default', config_path='config.json', test=False):
-
-    # 将数据转换为torch.FloatTensor，并标准化。
     train_data = Custom_dataset(dataset_name, model_str, setting, config_path, mode = 'train')
     test_data = Custom_dataset(dataset_name, model_str, setting, config_path,mode = 'test')
     val_data = Custom_dataset(dataset_name, model_str, setting, config_path,mode = 'val')
@@ -30,7 +28,6 @@ def make_weights_for_balanced_classes_split(dataset):
     N = float(len(dataset))
     weight_per_class = [N/len(dataset.img_cls_ids[c]) for c in range(len(dataset.img_cls_ids))]
     weight = [0] * int(N)
-    # weight = [1] * int(N)
     for idx in tqdm(range(len(dataset))):
         y = dataset.getlabel(idx)
         weight[idx] = weight_per_class[y]
@@ -38,7 +35,6 @@ def make_weights_for_balanced_classes_split(dataset):
     return torch.DoubleTensor(weight)
 
 def mixup_data(x, y, alpha=1.0, use_cuda=True):
-    '''Returns mixed inputs, pairs of targets, and lambda'''
     if alpha > 0:
         lam = np.random.beta(alpha, alpha)
     else:

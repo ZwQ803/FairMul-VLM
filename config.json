@@ -1,8 +1,8 @@
 {
     "PAD": {
-        "base_dir": "/mnc/zwq/Dataset/PADdata/images",
-        "split": "/mnc/zwq/codegithub/Dataset/PAD_split.csv",
-        "metadata": "/mnc/zwq/codegithub/Dataset/PAD_processed_metadata.csv",
+        "base_dir": "/FairMul-VLM/Dataset/PADdata/images",
+        "split": "/FairMul-VLM/Dataset/PAD_split.csv",
+        "metadata": "/FairMul-VLM/Dataset/PAD_processed_metadata.csv",
         "transforms": {
             "transform_train_basic": {
                 "Resize": [[224, 224]],
@@ -134,9 +134,9 @@
         }
     },
     "Ol3i": {
-        "base_dir": "/mnc/zwq/Dataset/ol3i/images",
-        "split": "/mnc/zwq/codegithub/Dataset/Ol3i_split.csv",
-        "metadata": "/mnc/zwq/codegithub/Dataset/Ol3i_processed_metadata.csv",
+        "base_dir": "/FairMul-VLM/Dataset/ol3i/images",
+        "split": "/FairMul-VLM/Dataset/Ol3i_split.csv",
+        "metadata": "/FairMul-VLM/Dataset/Ol3i_processed_metadata.csv",
         "transforms": {
             "transform_train": {
                 "Resize": [[300, 300]],
@@ -201,9 +201,9 @@
         }
     },
     "ODIR": {
-        "base_dir": "/mnc/syq/RetinaModel/RetinaDataset/ODIR-5K/odir5k/preprocessed_images",
-        "split": "/mnc/zwq/codegithub/Dataset/ODIR_split.csv",
-        "metadata": "/mnc/zwq/codegithub/Dataset/ODIR_processed_metadata.csv",
+        "base_dir": "/FairMul-VLM/Dataset/ODIR/images",
+        "split": "/FairMul-VLM/Dataset/ODIR_split.csv",
+        "metadata": "/FairMul-VLM/Dataset/ODIR_processed_metadata.csv",
         "transforms": {
             "transform_train": {
                 "Resize": [[300, 300]],

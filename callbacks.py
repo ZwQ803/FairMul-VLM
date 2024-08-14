@@ -23,31 +23,19 @@ class LossHistory:
         for key, value in kwargs.items():
             if not hasattr(self, key):
                 setattr(self, key, [])
-            # ---------------------------------#
-            #   为列表添加数值
-            # ---------------------------------#
             getattr(self, key).append(value)
-
-            # ---------------------------------#
-            #   写入txt
-            # ---------------------------------#
             with open(os.path.join(self.log_dir, key + ".txt"), 'a') as f:
                 f.write(str(value))
                 f.write("\n")
-
-            # ---------------------------------#
-            #   写入tensorboard
-            # ---------------------------------#
             self.writer.add_scalar(key, value, epoch)
 
-        self.loss_plot(loc,**kwargs)#loc:loss or acc
+        self.loss_plot(loc,**kwargs)
 
     def loss_plot(self,loc, **kwargs):
         plt.figure()
 
         for key, value in kwargs.items():
             losses = getattr(self, key)
-            # 如果losses包含PyTorch张量，需要将每个张量转移到CPU并转换为NumPy数组。
             if losses and isinstance(losses[0], torch.Tensor):
                 losses = [loss.cpu().numpy() for loss in losses]
             plt.plot(range(len(losses)), losses, linewidth=2, label=key)

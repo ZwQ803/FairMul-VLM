@@ -17,7 +17,6 @@ import os
 torch.autograd.set_detect_anomaly(True)
 
 
-# 给这个解析对象添加命令行参数
 parser = argparse.ArgumentParser(description='Test the pretrained models and save the results.')
 parser.add_argument('--dataset_name', type=str, default='PAD', help='Name of the dataset: PAD, Ol3i, ODIR')
 parser.add_argument('--model_str', type=str, default='image_only', help='Model type: image_only, multi_modal')
@@ -45,7 +44,6 @@ elif dataset_name == 'Ol3i':
 
 result_dir = args.result_dir
 os.makedirs(result_dir, exist_ok=True)
-# 从预训练状态字典中删除 'meta_input'
 pretrained_state_dict = {k: v for k, v in pretrained_state_dict.items() if k != "meta_input"}
 model.load_state_dict(pretrained_state_dict)
 
@@ -54,7 +52,6 @@ model.load_state_dict(pretrained_state_dict)
 all_val_pred = []
 all_val_target = []
 all_prob = []
-# 创建两个空列表，用于分别存储男性和女性的预测结果和真实标签
 
 male_val_pred = []
 male_val_target = []
@@ -62,7 +59,6 @@ male_prob = []
 female_val_pred = []
 female_val_target = []
 female_prob = []
-# 创建两个空列表，用于分别存储老年人和青年人的预测结果和真实标签
 
 old_val_pred = []
 old_val_target = []
@@ -80,11 +76,10 @@ dark_prob = []
 
 
 
-model.eval()  # 验证模型
+model.eval()
 test_loop = tqdm(test_loader, total=len(test_loader))
 
 idx = 0
-# for img, meta, label in teat_loop:
 for batch in test_loop:
     if model_str == 'image_only':
         if dataset_name == 'PAD':
@@ -112,28 +107,25 @@ for batch in test_loop:
         probabilities = torch.sigmoid(output).cpu().numpy()[:, 1]
     else:
         probabilities = torch.nn.functional.softmax(output, dim=1).cpu().numpy()
-    # 将所有测试数据的预测结果和真实标签添加到列表中
     all_val_pred.append(pred)
     all_val_target.append(label)
     all_prob.append(probabilities)
-    # print("all_prob",all_prob)
     for i in range(len(img)):
-        if age[i] > 64:  # >65岁
+        if age[i] > 64:
             old_val_pred.append(pred[i].item())
             old_val_target.append(label[i].item())
             old_prob.append(probabilities[i])
-        # elif torch.lt(age_info, torch.tensor([0.18], device=device)):  # <18岁
         else:
             young_val_pred.append(pred[i].item())
             young_val_target.append(label[i].item())
             young_prob.append(probabilities[i])
             # print(young_prob)
 
-        if sex[i] == 2:  # nvxing
+        if sex[i] == 2:
             male_val_pred.append(pred[i].item())
             male_val_target.append(label[i].item())
             male_prob.append(probabilities[i])
-        elif sex[i] == 1:  # 男性 这里写反里，输出先female再male，先男再女
+        elif sex[i] == 1:
             female_val_pred.append(pred[i].item())
             female_val_target.append(label[i].item())
             female_prob.append(probabilities[i])
@@ -148,7 +140,6 @@ for batch in test_loop:
                 dark_prob.append(probabilities[i])
 
 
-# 合并所有测试数据的预测结果和真实标签
 all_val_pred = torch.cat(all_val_pred, dim=0)
 all_val_target = torch.cat(all_val_target, dim=0)
 all_prob = np.concatenate(all_prob)
@@ -157,7 +148,7 @@ male_val_pred = torch.tensor(male_val_pred)
 female_val_pred = torch.tensor(female_val_pred)
 male_val_target = torch.tensor(male_val_target)
 female_val_target = torch.tensor(female_val_target)
-# 合并男性和女性的预测结果和真实标签
+
 male_val_pred = torch.cat((male_val_pred,), dim=0)
 female_val_pred = torch.cat((female_val_pred,), dim=0)
 male_val_target = torch.cat((male_val_target,), dim=0)
@@ -168,7 +159,6 @@ young_val_pred = torch.tensor(young_val_pred)
 old_val_target = torch.tensor(old_val_target)
 young_val_target = torch.tensor(young_val_target)
 
-# 合并年龄的预测结果和真实标签
 old_val_pred = torch.cat((old_val_pred,), dim=0)
 young_val_pred = torch.cat((young_val_pred,), dim=0)
 old_val_target = torch.cat((old_val_target,), dim=0)
@@ -185,36 +175,23 @@ if dataset_name == 'PAD':
     dark_val_pred = torch.cat((dark_val_pred,), dim=0)
     dark_val_target = torch.cat((dark_val_target,), dim=0)
 
-# 生成热力图并保存
 def save_heatmap(val_cm, heatmap_result_dir):
     xtick = cls.keys()
     ytick = cls.keys()
-    # 处理分母为零的情况，将分母为零的行的所有元素设置为0，以避免除法错误
     plt.clf()
-    # val_cm = np.where(val_cm.sum(axis=1)[:, np.newaxis] == 0, 0, val_cm)
     val_cm = val_cm.astype('float') / val_cm.sum(axis=1)[:, np.newaxis]
     h = sns.heatmap(val_cm, fmt='.2f', cmap="Blues", annot=True, cbar=False, xticklabels=xtick, yticklabels=ytick)
     cb = h.figure.colorbar(h.collections[0])
     plt.savefig(os.path.join(heatmap_result_dir, 'confusionmatrix.png'))
 
 def metrics_to_csv(val_target, val_pred, prob_np, metrics_result_dir, tag):
-    # 保存混淆矩阵为CSV文件，文件名中包含准确率
     acc = accuracy_score(val_target.cpu().numpy(), val_pred.cpu().numpy())
     recall = recall_score(val_target.cpu().numpy(), val_pred.cpu().numpy(), average='macro', zero_division=1)
     precision = precision_score(val_target.cpu().numpy(), val_pred.cpu().numpy(), average='macro', zero_division=1)
-    # f1_macro = f1_score(val_target.cpu().numpy(), val_pred.cpu().numpy(), average='macro')
     f1_micro = f1_score(val_target.cpu().numpy(), val_pred.cpu().numpy(), average='micro')
-    # 提取概率分数并转换为 NumPy 数组
-    # prob_np = np.concatenate([prob.cpu().numpy() for prob in val_prob])
-    # prob_np = prob_np[:, 1]
-    # print(val_target.cpu().numpy().shape, prob_np.shape)
     auc = roc_auc_score(val_target.cpu().numpy(), prob_np, average='macro', multi_class='ovr')
-    # 创建一个包含指标名称和对应值的列表
-    metric_names = ["Accuracy", "recall", "Precision", "F1 Micro"]  # , "AUC"]
     metric_values = [acc.item(), recall.item(), precision.item(), f1_micro.item(), auc.item()]  # , auc.item()]
     val_cm = confusion_matrix(val_target.cpu().numpy(),val_pred.cpu().numpy())
-    # 将指标名称和对应值保存到 CSV 文件
-
     with open(os.path.join(metrics_result_dir, "confusion_matrix.csv"), 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(val_cm)
@@ -267,17 +244,12 @@ else:
     all_data = [all_metric_values, female_metric_values, male_metric_values, old_metric_values, young_metric_values]
 
 
-
-# 输出 CSV 文件路径
 csv_file_path = os.path.join(result_dir, "metrics.csv")
 
-# 写入数据到 CSV 文件
 with open(csv_file_path, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
-    # 写入头部，即指标名称
     writer.writerow(['Category'] + metrics)
 
-    # 循环写入每个类别的指标数据
     for category, values in zip(categories, all_data):
         writer.writerow([category] + values)
 
