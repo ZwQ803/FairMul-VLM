@@ -22,38 +22,19 @@ def load_transforms(transforms_config):
 def create_transform_pipeline(transform_config):
     transform_pipeline = []
     for transform, args in transform_config.items():
-        # 特殊处理 Normalize，因为它需要接收两个参数 mean 和 std
         if transform == "Normalize":
-            # Normalize 期望分别为 mean 和 std 传递两个列表，确保两者都被正确传递
-            mean, std = args[0][0], args[0][1]  # 根据你实际的 JSON 结构调整
+            mean, std = args[0][0], args[0][1]
             transform_instance = getattr(transforms, transform)(mean, std)
         elif isinstance(args, dict):
-            # 处理其他可能以关键字参数形式提供的转换
             transform_instance = getattr(transforms, transform)(**args)
         elif isinstance(args, list):
-            # 处理其他可能以位置参数形式提供的转换
             transform_instance = getattr(transforms, transform)(*args)
         elif args is None:
-            # 处理无参数的转换
             transform_instance = getattr(transforms, transform)()
         else:
             raise TypeError(f"Arguments for {transform} are not properly formatted.")
-
         transform_pipeline.append(transform_instance)
-
     return transforms.Compose(transform_pipeline)
-# def create_transform_pipeline(transform_config):
-#     transform_pipeline = []
-#     for transform, args in transform_config.items():
-#         if transform == "Normalize":
-#             # Normalize 期望分别为 mean 和 std 传递两个列表，确保两者都被正确传递
-#             mean, std = args[0][0], args[0][1]  # 根据你实际的 JSON 结构调整
-#             transform_pipeline.append(getattr(transforms, transform)(mean, std))
-#         elif args is not None:
-#             transform_pipeline.append(getattr(transforms, transform)(*args))
-#         else:
-#             transform_pipeline.append(getattr(transforms, transform)())
-#     return transforms.Compose(transform_pipeline)
 
 class Custom_dataset(Dataset):
     def __init__(self, dataset_name, model_str, setting='default', config_path='config.json', mode='train'):
@@ -67,26 +48,6 @@ class Custom_dataset(Dataset):
         self.split = self.config['split']
         self.meta_data = pd.read_csv(self.config['metadata'])
         self.transform_train, self.transform_test = load_transforms(self.config['transforms'])
-
-        # self.transform_train = transforms.Compose([
-        #     transforms.Resize([300, 300]),
-        #     transforms.CenterCrop(224),
-        #     transforms.RandomHorizontalFlip(p=0.5),
-        #     transforms.RandomRotation(30),
-        #     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-        #     transforms.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10),
-        #     transforms.ToTensor(),
-        #     transforms.RandomErasing(p=0.5, scale=(0.02, 0.33), ratio=(0.3, 3.3), value=0),
-        #
-        #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        # ])
-        #
-        # self.transform_test = transforms.Compose([
-        #     transforms.Resize([224, 224]),
-        #     transforms.ToTensor(),
-        #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        # ])
-
         self.mode = mode
         if self.mode == 'train':
             self.images = pd.read_csv(self.split)['train']
@@ -99,23 +60,22 @@ class Custom_dataset(Dataset):
         self.sex_id_matrix = np.eye(3)
         self.smoke_id_matrix = np.eye(3)
         self.drink_id_matrix = np.eye(3)
-        self.background_father_id_matrix = np.eye(14)   #6-20
-        self.background_mother_id_matrix = np.eye(12)   #20-32
+        self.background_father_id_matrix = np.eye(14)
+        self.background_mother_id_matrix = np.eye(12)
         self.pesticide_id_matrix = np.eye(3)
-        # self.gender_id_matrix = np.eye(3) #35-38
-        self.skin_cancer_history_id_matrix = np.eye(3)  #38-41
-        self.cancer_history_id_matrix = np.eye(3)   #41-44
-        self.has_piped_water_id_matrix = np.eye(3)  #44-47
-        self.has_sewage_system_id_matrix = np.eye(3)    #47-50
-        self.region_id_matrix = np.eye(15)  #50-65
-        self.itch_id_matrix = np.eye(3) #65-68
-        self.grew_id_matrix = np.eye(3) #68-71
-        self.hurt_id_matrix = np.eye(3) #71-74
-        self.changed_id_matrix = np.eye(3)  #74-77
-        self.bleed_id_matrix = np.eye(3)    #77-80
-        self.elevation_id_matrix = np.eye(3)    #80-83
-        self.biopsed_id_matric = np.eye(3)  #83-86
-        self.fitspatrick_id_matrix = np.eye(7)  #86-93
+        self.skin_cancer_history_id_matrix = np.eye(3)
+        self.cancer_history_id_matrix = np.eye(3)
+        self.has_piped_water_id_matrix = np.eye(3)
+        self.has_sewage_system_id_matrix = np.eye(3)
+        self.region_id_matrix = np.eye(15)
+        self.itch_id_matrix = np.eye(3)
+        self.grew_id_matrix = np.eye(3)
+        self.hurt_id_matrix = np.eye(3)
+        self.changed_id_matrix = np.eye(3)
+        self.bleed_id_matrix = np.eye(3)
+        self.elevation_id_matrix = np.eye(3)
+        self.biopsed_id_matric = np.eye(3)
+        self.fitspatrick_id_matrix = np.eye(7)
         self.cls_ids_prep()
 
     def cls_ids_prep(self):
@@ -164,21 +124,20 @@ class Custom_dataset(Dataset):
         elif self.model_type == 'multi_modal':
             if self.dataset_name == 'PAD':
                 ori_skin = row['fitspatrick_num'].values[0]
-                smoke = self.smoke_id_matrix[row['smoke_num'].values[0]]  # 1
+                smoke = self.smoke_id_matrix[row['smoke_num'].values[0]]
                 drink = self.drink_id_matrix[row['drink_num'].values[0]]
                 background_father = self.background_father_id_matrix[row['background_father_num'].values[0]]
                 background_mother = self.background_mother_id_matrix[row['background_mother_num'].values[0]]
-                pesticide = self.pesticide_id_matrix[row['pesticide_num'].values[0]]  # 5
-                # gender = self.gender_id_matrix[row['gender_num'].values[0]]
+                pesticide = self.pesticide_id_matrix[row['pesticide_num'].values[0]]
                 skin_cancer_history = self.skin_cancer_history_id_matrix[row['skin_cancer_history_num'].values[0]]
-                cancer_history = self.cancer_history_id_matrix[row['cancer_history_num'].values[0]]  # 8
+                cancer_history = self.cancer_history_id_matrix[row['cancer_history_num'].values[0]]
                 has_piped_water = self.has_piped_water_id_matrix[row['has_piped_water_num'].values[0]]
-                has_sewage_system = self.has_sewage_system_id_matrix[row['has_sewage_system_num'].values[0]]  # 10
+                has_sewage_system = self.has_sewage_system_id_matrix[row['has_sewage_system_num'].values[0]]
                 region = self.region_id_matrix[row['region_num'].values[0]]
-                itch = self.itch_id_matrix[row['itch_num'].values[0]]  # 12
+                itch = self.itch_id_matrix[row['itch_num'].values[0]]
                 grew = self.grew_id_matrix[row['grew_num'].values[0]]
                 hurt = self.hurt_id_matrix[row['hurt_num'].values[0]]
-                changed = self.changed_id_matrix[row['changed_num'].values[0]]  # 15
+                changed = self.changed_id_matrix[row['changed_num'].values[0]]
                 bleed = self.bleed_id_matrix[row['bleed_num'].values[0]]
                 elevation = self.elevation_id_matrix[row['elevation_num'].values[0]]
                 biopsed = self.biopsed_id_matric[row['biopsed_num'].values[0]]
@@ -237,6 +196,14 @@ class Custom_dataset(Dataset):
                         elevation), biopsed), fitspatrick),
                         age), diameter_1), diameter_2)
                     meta_data = torch.tensor(meta_data)
+                elif self.metadata_config == 'without_gender':
+                    meta_data = np.append(np.append(np.append(np.append(np.append(np.append(np.append(np.append(np.append(np.append(
+                        np.append(np.append(np.append(np.append(np.append(np.append(np.append(
+                            np.append(np.append(np.append(smoke, drink), background_father),
+                                      background_mother), pesticide), skin_cancer_history), cancer_history), region),
+                            has_piped_water), has_sewage_system), itch), grew), hurt), changed), bleed),
+                        elevation), biopsed), fitspatrick),
+                        age), diameter_1), diameter_2)
                 elif self.metadata_config == 'without_skin_cancer_history':
                     meta_data = np.append(np.append(np.append(np.append(np.append(np.append(np.append(np.append(np.append(np.append(
                         np.append(np.append(np.append(np.append(np.append(np.append(np.append(
