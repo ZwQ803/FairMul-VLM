@@ -11,7 +11,7 @@ git clone https://github.com/ZwQ803/FairMul-VLM.git
 cd FairMul-VLM
 ```
 
-2. Install Package: Create conda environment
+2. Create conda environment
 
 ```bash
 conda create -n FairMul-VLM python=3.8 -y
